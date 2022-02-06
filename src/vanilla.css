@@ -341,3 +341,21 @@ input:active {
     --tertiary-color: #2d2d2d;
   }
 }
+
+.input-wrapper {
+  display: flex;
+}
+
+.input-wrapper #input {
+  width: 100%;
+  margin-right: 3px;
+}
+
+.result {
+  font-size: large;
+  font-weight: bold;
+}
+
+.result::before {
+  content: "⇒ ";
+}
