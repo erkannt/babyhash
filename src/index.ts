@@ -3,8 +3,12 @@ import {pipe} from 'fp-ts/function'
 import * as O from 'fp-ts/Option';
 import { sequenceS } from 'fp-ts/lib/Apply';
 
+const hash = (input: string) => {
+  return sha512.hex(input)
+}
+
 const updateResult = (result: HTMLElement, input: HTMLInputElement) => () => {
-  result.textContent = sha512.hex(input.value)
+  result.textContent = hash(input.value)
 }
 
 pipe(
