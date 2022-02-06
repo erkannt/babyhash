@@ -13,9 +13,16 @@ const extractName = (input: DocumentFragment) => pipe(
   RA.map((element) => element.innerHTML)
 )
 
+const extractIncidence = (input: DocumentFragment) => pipe(
+  input,
+  (html) => Array.from(html.querySelectorAll('.detail-value')),
+  RA.map((element) => element.innerHTML)
+)
+
+
 const extractNameAndIncidence = (input: DocumentFragment) => {
   const names = extractName(input)
-  const incidence = extractName(input)
+  const incidence = extractIncidence(input)
 
   return zip(names, incidence)
 }
