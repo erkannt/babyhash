@@ -10,4 +10,5 @@ const resultElement = document.getElementById('result')
 
 const updateElement = document.getElementById('update')
 
+resultElement.textContent = sha512.hex(inputElement.value)
 updateElement.addEventListener('click', updateResult)
