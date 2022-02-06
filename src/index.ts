@@ -1,14 +1,25 @@
 import {sha512} from 'js-sha512'
+import {pipe} from 'fp-ts/function'
+import * as O from 'fp-ts/Option';
+import { sequenceS } from 'fp-ts/lib/Apply';
 
-export function updateResult() {
-  resultElement.textContent = sha512.hex(inputElement.value)
+const updateResult = (result: HTMLElement, input: HTMLInputElement) => () => {
+  result.textContent = sha512.hex(input.value)
 }
 
-const inputElement = document.getElementById('input') as HTMLInputElement
+pipe(
+  {
+    input:  O.fromNullable(document.getElementById('input') as HTMLInputElement),
+    button:  O.fromNullable(document.getElementById('update')),
+    result:  O.fromNullable(document.getElementById('result')),
+  },
+  sequenceS(O.Apply),
+  O.match(
+    () => {},
+    ({input, button, result}) => {
+      result.textContent = sha512.hex(input.value)
+      button.addEventListener('click', updateResult(result, input))
+    }
+  )
+)
 
-const resultElement = document.getElementById('result')
-
-const updateElement = document.getElementById('update')
-
-resultElement.textContent = sha512.hex(inputElement.value)
-updateElement.addEventListener('click', updateResult)
