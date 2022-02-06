@@ -5,10 +5,8 @@ import * as RA from 'fp-ts/ReadonlyArray';
 import axios from 'axios'
 import * as T from 'fp-ts/Task';
 import { bData } from './b';
-
-const zip = <A>(arr: ReadonlyArray<A>, ...arrs: ReadonlyArray<ReadonlyArray<A>>) => {
-  return arr.map((val, i) => arrs.reduce((a, arr) => [...a, arr[i]], [val]));
-}
+import * as N from 'fp-ts/number'
+import * as Ord from 'fp-ts/Ord'
 
 const extractName = (input: DocumentFragment) => pipe(
   input,
@@ -19,15 +17,17 @@ const extractName = (input: DocumentFragment) => pipe(
 const extractIncidence = (input: DocumentFragment) => pipe(
   input,
   (html) => Array.from(html.querySelectorAll('.detail-value')),
-  RA.map((element) => element.innerHTML)
+  RA.map((element) => element.innerHTML),
+  RA.map((s) => s.replace(',', '')),
+  RA.map((s) => parseInt(s, 10)),
 )
 
 
-const extractNameAndIncidence = (input: DocumentFragment) => {
+const extractNameAndIncidence = (input: DocumentFragment): ReadonlyArray<NameIncidence> => {
   const names = extractName(input)
   const incidence = extractIncidence(input)
 
-  return zip(names, incidence)
+  return RA.zip(names, incidence)
 }
 
 
@@ -39,6 +39,8 @@ const getData = (url: string) => async () => {
   return bData
 }
 
+type NameIncidence = Readonly<[string, number]>
+
 const scrape = async () => {
 	const result = await pipe (
     ['a', 'b'],
@@ -48,6 +50,8 @@ const scrape = async () => {
       RA.map(JSDOM.fragment),
       RA.map(extractNameAndIncidence),
       RA.flatten,
+      RA.sort(Ord.contramap((tup: NameIncidence) => tup[1])(N.Ord)),
+      RA.reverse,
     ))
 	)()
   console.log(result)
