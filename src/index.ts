@@ -1,4 +1,4 @@
-import { sha512 } from 'js-sha512';
+import { sha256 } from 'js-sha256';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { sequenceS } from 'fp-ts/lib/Apply';
@@ -24,7 +24,7 @@ const names = pipe(
 const hash = (input: string) =>
   pipe(
     input,
-    sha512.hex,
+    sha256.hex,
     (hex) => '0x' + hex,
     BigInt,
     (bi) => bi.toString(2),
