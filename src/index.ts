@@ -2,24 +2,24 @@ import { sha512 } from 'js-sha512';
 import { pipe } from 'fp-ts/function';
 import * as O from 'fp-ts/Option';
 import { sequenceS } from 'fp-ts/lib/Apply';
-import { top1000 } from './names';
 import * as RA from 'fp-ts/ReadonlyArray';
 import { namesWithIncidence } from '../data/names-with-incidence';
 
 const chunkString = (size: number) => (input: string) => {
   const inputLenght = input.length;
   const nChunks = Math.ceil(inputLenght / size);
-  let result = [];
+  let chunks = [];
   for (let i = 0; i < nChunks; i++) {
-    result.push(input.slice(size * i, size * i + size));
+    chunks.push(input.slice(size * i, size * i + size));
   }
-  return result.map((s) => parseInt(s, 10));
+
+  return chunks;
 };
 
 const names = pipe(
   namesWithIncidence,
   RA.map(([name]) => name),
-)
+);
 
 const hash = (input: string) =>
   pipe(
@@ -27,8 +27,10 @@ const hash = (input: string) =>
     sha512.hex,
     (hex) => '0x' + hex,
     BigInt,
-    String,
-    chunkString(3),
+    (bi) => bi.toString(2),
+    (tooLong) => tooLong.slice(0, 140),
+    chunkString(14),
+    RA.map((s) => parseInt(s, 2)),
     RA.map((i) => names[i]),
     (names) => names.join(' '),
   );
