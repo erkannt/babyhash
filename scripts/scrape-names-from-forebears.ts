@@ -1,10 +1,8 @@
 import { flow, pipe } from 'fp-ts/lib/function'
-import { aData }  from './a'
 import { JSDOM } from 'jsdom';
 import * as RA from 'fp-ts/ReadonlyArray';
 import axios from 'axios'
 import * as T from 'fp-ts/Task';
-import { bData } from './b';
 import * as N from 'fp-ts/number'
 import * as Ord from 'fp-ts/Ord'
 import * as fs from "fs";
@@ -19,7 +17,7 @@ const extractIncidence = (input: DocumentFragment) => pipe(
   input,
   (html) => Array.from(html.querySelectorAll('.detail-value')),
   RA.map((element) => element.innerHTML),
-  RA.map((s) => s.replace(',', '')),
+  RA.map((s) => s.replace(/,/g, '')),
   RA.map((s) => parseInt(s, 10)),
 )
 
@@ -33,20 +31,19 @@ const extractNameAndIncidence = (input: DocumentFragment): ReadonlyArray<NameInc
 
 
 const getData = (url: string) => async () => {
-	//const {data} = await (axios.get(url))
-  if (url.endsWith('a')) {
-    return aData
-  }
-  return bData
+  const { data } = await (axios.get(url))
+  return data
 }
 
 type NameIncidence = Readonly<[string, number]>
 
 const scrape = async () => {
-	const result = await pipe (
-    ['a', 'b'],
+  const result = await pipe(
+    'aáåâäàæãbcçčćdđďeéèfghiíjklłľmnñňoöøóőõðpqrřsşšșśtţþțťuüúūvwxyzžż',
+    (letters) => letters.split(""),
+    RA.map(encodeURIComponent),
     RA.map((letter) => `https://forebears.io/forenames/begining-with/${letter}`),
-		T.traverseArray(getData),
+    T.traverseArray(getData),
     T.map(flow(
       RA.map(JSDOM.fragment),
       RA.map(extractNameAndIncidence),
@@ -55,13 +52,13 @@ const scrape = async () => {
       RA.reverse,
       JSON.stringify,
     ))
-	)()
+  )()
 
   const outputFile = './data/names-with-incidence.json'
 
   fs.writeFile(outputFile, result, (err) => {
     if (err) {
-        throw err;
+      throw err;
     }
     console.log(`Saved to '${outputFile}'`);
   });
