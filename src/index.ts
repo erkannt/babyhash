@@ -3,9 +3,24 @@ import {pipe} from 'fp-ts/function'
 import * as O from 'fp-ts/Option';
 import { sequenceS } from 'fp-ts/lib/Apply';
 
-const hash = (input: string) => {
-  return sha512.hex(input)
+const chunkString =  (size: number) => (input: string) =>{
+  const inputLenght = input.length
+  const nChunks = Math.ceil(inputLenght / size);
+  let result = []
+  for (let i = 0; i < nChunks; i++) {
+    result.push(input.slice(size*i, size*i+size))
+  }
+  return(result.map((s) => parseInt(s, 10)))
 }
+
+const hash = (input: string) => pipe(
+  input,
+  sha512.hex,
+  (hex) => '0x' + hex,
+  BigInt,
+  String,
+  chunkString(3)
+)
 
 const updateResult = (result: HTMLElement, input: HTMLInputElement) => () => {
   result.textContent = hash(input.value)
@@ -21,7 +36,7 @@ pipe(
   O.match(
     () => {},
     ({input, button, result}) => {
-      result.textContent = sha512.hex(input.value)
+      updateResult(result, input)()
       button.addEventListener('click', updateResult(result, input))
     }
   )
