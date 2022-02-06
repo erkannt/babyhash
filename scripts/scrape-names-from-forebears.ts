@@ -7,6 +7,7 @@ import * as T from 'fp-ts/Task';
 import { bData } from './b';
 import * as N from 'fp-ts/number'
 import * as Ord from 'fp-ts/Ord'
+import * as fs from "fs";
 
 const extractName = (input: DocumentFragment) => pipe(
   input,
@@ -52,9 +53,18 @@ const scrape = async () => {
       RA.flatten,
       RA.sort(Ord.contramap((tup: NameIncidence) => tup[1])(N.Ord)),
       RA.reverse,
+      JSON.stringify,
     ))
 	)()
-  console.log(result)
+
+  const outputFile = './data/names-with-incidence.json'
+
+  fs.writeFile(outputFile, result, (err) => {
+    if (err) {
+        throw err;
+    }
+    console.log(`Saved to '${outputFile}'`);
+  });
 }
 
 scrape()
