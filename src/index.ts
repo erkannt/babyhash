@@ -2,6 +2,8 @@ import {sha512} from 'js-sha512'
 import {pipe} from 'fp-ts/function'
 import * as O from 'fp-ts/Option';
 import { sequenceS } from 'fp-ts/lib/Apply';
+import { top1000 } from './names';
+import * as RA from 'fp-ts/ReadonlyArray';
 
 const chunkString =  (size: number) => (input: string) =>{
   const inputLenght = input.length
@@ -19,7 +21,9 @@ const hash = (input: string) => pipe(
   (hex) => '0x' + hex,
   BigInt,
   String,
-  chunkString(3)
+  chunkString(3),
+  RA.map((i) => top1000[i]),
+  (names) => names.join(' ')
 )
 
 const updateResult = (result: HTMLElement, input: HTMLInputElement) => () => {
