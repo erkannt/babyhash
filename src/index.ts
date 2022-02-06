@@ -39,18 +39,26 @@ const updateResult = (result: HTMLElement, input: HTMLInputElement) => () => {
   result.textContent = hash(100, 10)(input.value);
 };
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
 pipe(
   {
     input: O.fromNullable(document.getElementById('input') as HTMLInputElement),
     button: O.fromNullable(document.getElementById('update')),
     result: O.fromNullable(document.getElementById('result')),
+    query: O.some(urlParams.get('input') ?? '')
   },
   sequenceS(O.Apply),
   O.match(
     () => {},
-    ({ input, button, result }) => {
+    ({ input, button, result, query }) => {
+      query === ''
+        ? input.value = 'Adam, Steve and Eve'
+        : input.value = query
       updateResult(result, input)();
       button.addEventListener('click', updateResult(result, input));
+      input.addEventListener('keyup', () => history.replaceState(null, '', `?input=${input.value}`));
     },
   ),
 );
