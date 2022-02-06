@@ -23,13 +23,13 @@
 
     <h2>How it works</h2>
 
-    <p>Taking any string as an input get a unique 10 name combo from 16.384 common names from around the world.</p>
+    <p>Taking any string as an input get a unique 10 name combo from 10.000 common names from around the world.</p>
 
     <p>The exact process is:</p>
 
     <ol>
       <li>input string hashed with sha256</li>
-      <li>take first 140 bits of hash</li>
+      <li>take first 100 bits of hash</li>
       <li>split into 10 chunks</li>
       <li>convert chunks to integer</li>
       <li>lookup name in big name list</li>

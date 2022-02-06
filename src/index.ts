@@ -21,22 +21,22 @@ const names = pipe(
   RA.map(([name]) => name),
 );
 
-const hash = (input: string) =>
+const hash = (bits: number, nameCount: number ) => (input: string) =>
   pipe(
     input,
     sha256.hex,
     (hex) => '0x' + hex,
     BigInt,
     (bi) => bi.toString(2),
-    (tooLong) => tooLong.slice(0, 140),
-    chunkString(14),
+    (tooLong) => tooLong.slice(0, bits),
+    chunkString(bits / nameCount),
     RA.map((s) => parseInt(s, 2)),
     RA.map((i) => names[i]),
     (names) => names.join(' '),
   );
 
 const updateResult = (result: HTMLElement, input: HTMLInputElement) => () => {
-  result.textContent = hash(input.value);
+  result.textContent = hash(100, 10)(input.value);
 };
 
 pipe(
