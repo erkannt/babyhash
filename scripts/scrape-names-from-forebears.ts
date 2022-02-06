@@ -1,7 +1,9 @@
 import { pipe } from 'fp-ts/lib/function'
-import { data } from './example-data'
+import { aData }  from './a'
 import { JSDOM } from 'jsdom';
 import * as RA from 'fp-ts/ReadonlyArray';
+import axios from 'axios'
+import * as T from 'fp-ts/Task';
 
 const zip = <A>(arr: ReadonlyArray<A>, ...arrs: ReadonlyArray<ReadonlyArray<A>>) => {
   return arr.map((val, i) => arrs.reduce((a, arr) => [...a, arr[i]], [val]));
@@ -27,13 +29,23 @@ const extractNameAndIncidence = (input: DocumentFragment) => {
   return zip(names, incidence)
 }
 
+
+const getData = (url: string) => async () => {
+	//const {data} = await (axios.get(url))
+  if (url.endsWith('a')) {
+    return aData
+  }
+  return aData
+}
+
 const scrape = async () => {
-	//const {data} = await (axios.get('https://forebears.io/forenames/begining-with/a'))
-	const result = pipe (
-		data,
-    JSDOM.fragment,
-    extractNameAndIncidence,
-	)
+	const result = await pipe (
+    'a',
+    (letter) => `https://forebears.io/forenames/begining-with/${letter}`,
+		getData,
+    T.map(JSDOM.fragment),
+    T.map(extractNameAndIncidence),
+	)()
   console.log(result)
 }
 
