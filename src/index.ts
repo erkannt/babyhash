@@ -4,6 +4,7 @@ import * as O from 'fp-ts/Option';
 import { sequenceS } from 'fp-ts/lib/Apply';
 import { top1000 } from './names';
 import * as RA from 'fp-ts/ReadonlyArray';
+import { namesWithIncidence } from '../data/names-with-incidence';
 
 const chunkString = (size: number) => (input: string) => {
   const inputLenght = input.length;
@@ -15,6 +16,11 @@ const chunkString = (size: number) => (input: string) => {
   return result.map((s) => parseInt(s, 10));
 };
 
+const names = pipe(
+  namesWithIncidence,
+  RA.map(([name]) => name),
+)
+
 const hash = (input: string) =>
   pipe(
     input,
@@ -23,7 +29,7 @@ const hash = (input: string) =>
     BigInt,
     String,
     chunkString(3),
-    RA.map((i) => top1000[i]),
+    RA.map((i) => names[i]),
     (names) => names.join(' '),
   );
 
