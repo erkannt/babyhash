@@ -357,5 +357,5 @@ input:active {
 }
 
 .result::before {
-  content: "⇒ ";
+  content: '⇒ ';
 }

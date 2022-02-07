@@ -21,7 +21,7 @@ const names = pipe(
   RA.map(([name]) => name),
 );
 
-const hash = (bits: number, nameCount: number ) => (input: string) =>
+const hash = (bits: number, nameCount: number) => (input: string) =>
   pipe(
     input,
     sha256.hex,
@@ -47,15 +47,13 @@ pipe(
     input: O.fromNullable(document.getElementById('input') as HTMLInputElement),
     button: O.fromNullable(document.getElementById('update')),
     result: O.fromNullable(document.getElementById('result')),
-    query: O.some(urlParams.get('input') ?? '')
+    query: O.some(urlParams.get('input') ?? ''),
   },
   sequenceS(O.Apply),
   O.match(
     () => {},
     ({ input, button, result, query }) => {
-      query === ''
-        ? input.value = 'Adam, Steve and Eve'
-        : input.value = query
+      query === '' ? (input.value = 'Adam, Steve and Eve') : (input.value = query);
       updateResult(result, input)();
       button.addEventListener('click', updateResult(result, input));
       input.addEventListener('keyup', () => history.replaceState(null, '', `?input=${input.value}`));
