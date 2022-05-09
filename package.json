@@ -5,7 +5,7 @@
   "scripts": {
     "format": "prettier --ignore-unknown --write '**'",
     "typecheck": "tsc --noEmit",
-    "build": "parcel build src/index.html --no-source-maps --public-url https://erkannt.github.io/babyhash",
+    "build": "parcel build src/index.html --no-source-maps --public-url https://babyhash.rknt.de",
     "start": "parcel -p 8080 src/index.html"
   },
   "author": "",
